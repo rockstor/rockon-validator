@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 )
 
 func main() {
@@ -15,23 +14,19 @@ func main() {
 			os.Exit(1)
 		}
 
-		var rockon Rockon
+		var rockon RockOn
 		err = json.Unmarshal(data, &rockon)
 		if err != nil {
+			// It may be the root json, so skip it
+			root := map[string]string{}
+			err1 := json.Unmarshal(data, &root)
+			if err1 == nil {
+				continue
+			}
 			fmt.Println(f, err)
 			os.Exit(1)
 		}
 
-		var out strings.Builder
-		enc := json.NewEncoder(&out)
-		enc.SetEscapeHTML(false)
-		enc.SetIndent("", "  ")
-
-		err = enc.Encode(rockon)
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		fmt.Println(out.String())
+		fmt.Println(rockon.ToJSON())
 	}
 }
