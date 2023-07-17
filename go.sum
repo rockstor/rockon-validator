@@ -1,0 +1,6 @@
+github.com/hexops/gotextdiff v1.0.3 h1:gitA9+qJrrTCsiCl7+kh75nPqQt1cx4ZkudSTLoUqJM=
+github.com/hexops/gotextdiff v1.0.3/go.mod h1:pSWU5MAI3yDq+fZBTazCSJysOMbxWL1BSow5/V2vxeg=
+github.com/lmittmann/tint v0.3.4 h1:QOr2U9GKQfNsNhKPhL7PexQm0mqkRmvuy1UrZb6AidM=
+github.com/lmittmann/tint v0.3.4/go.mod h1:vYasuAV5qbz2TYeUK+sj8iURGIl9T/WOlh4qzYGP16I=
+golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1 h1:MGwJjxBy0HJshjDNfLsYO8xppfqWlA5ZT9OhtUUhTNw=
+golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1/go.mod h1:FXUEEKJgO7OQYeo8N01OfiKP8RXMtf6e8aTskBGqWdc=
