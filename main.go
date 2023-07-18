@@ -63,6 +63,27 @@ func parseFileArgs() (filePaths []string) {
 		glob, _ := filepath.Glob(f)
 		filePaths = append(filePaths, glob...)
 	}
+
+	for i, f := range filePaths {
+		files, err := os.ReadDir(f)
+		if err != nil {
+			continue
+		}
+
+		entries := []string{}
+		for _, e := range files {
+			if !e.IsDir() {
+				entries = append(entries, filepath.Join(f, e.Name()))
+			}
+		}
+		head := filePaths[:i]
+		if i == 0 {
+			head = []string{}
+		}
+		tail := filePaths[i+1:]
+		filePaths = append(head, entries...)
+		filePaths = append(filePaths, tail...)
+	}
 	return filePaths
 }
 
