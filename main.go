@@ -67,7 +67,7 @@ func parseFileArgs() (filePaths []string) {
 	for i, f := range filePaths {
 		files, err := os.ReadDir(f)
 		if err != nil {
-			continue
+			continue // What we got was not a directory, so we can leave it be
 		}
 
 		entries := []string{}
@@ -116,7 +116,7 @@ func checkRootMap(rootMap map[string]string, filename string, rockon RockOn) {
 	for name := range rockon {
 		if found {
 			if name != foundName {
-				slog.Warn("Name does not match", slog.String("root.json", foundName), slog.String("name", name), slog.String("rockon", filepath.Base(filename)))
+				slog.Warn("RockOn name does not match", slog.String("root.json", foundName), slog.String("rockon", name), slog.String("file", filepath.Base(filename)))
 			}
 		} else {
 			rootMap[name] = filename
@@ -152,8 +152,8 @@ func main() {
 		logger.Info("Checking", slog.String("file", f))
 		data, err := os.ReadFile(f)
 		if err != nil {
-			logger.Error("", slog.Any("err", err))
-			os.Exit(1)
+			logger.Error("Reading file", slog.String("file", f), slog.Any("err", err))
+			os.Exit(1) // We should be able to read all the files
 		}
 		dataString := string(data)
 
@@ -168,22 +168,25 @@ func main() {
 		var rockon RockOn
 		err = json.Unmarshal(data, &rockon)
 		if err != nil {
-			// It may be the root.json, so skip it
 			err1 := json.Unmarshal(data, &rootMap)
 			if err1 == nil {
 				logger.Warn("Possible root.json, skipping", slog.String("file", f))
-				continue
+				continue // It may be the root.json, so skip it
 			}
-			logger.Error(f, slog.Any("err", err))
-			os.Exit(1)
+			if filepath.Ext(f) == ".json" {
+				logger.Error("Unmarshaling json data", slog.String("file", f), slog.Any("err", err))
+				os.Exit(1) // File was named `.json`, but couldn't be marshalled as expected, so we need to exit.
+			}
+			logger.Warn("Non-json file passed as input, skipping", slog.String("file", f))
+			continue // Otherwise, it wasn't a json file, so we shouldn't worry about it.
 		}
 
 		checkRootMap(rootMap, filepath.Base(f), rockon)
 
 		result, err := rockon.ToJSON()
 		if err != nil {
-			logger.Error("", slog.Any("err", err))
-			os.Exit(1)
+			logger.Error("Marshaling to JSON", slog.Any("err", err))
+			os.Exit(1) // This should basically never happen
 		}
 
 		if dataString != result {
@@ -202,7 +205,7 @@ func main() {
 			logger.Debug("Writing rockon", slog.String("file", f))
 			err = os.WriteFile(f, []byte(result), stat.Mode())
 			if err != nil {
-				logger.Error("Writing rockon", slog.Any("err", err))
+				logger.Error("Writing rockon", slog.String("file", f), slog.Any("err", err))
 			}
 			rootStat, err := os.Stat(rootFile)
 			if os.IsNotExist(err) {
@@ -212,7 +215,7 @@ func main() {
 			logger.Debug("Writing root", slog.String("file", rootFile))
 			err = os.WriteFile(rootFile, rootJson, rootStat.Mode())
 			if err != nil {
-				logger.Error("Writing root", slog.Any("err", err))
+				logger.Error("Writing root", slog.String("file", rootFile), slog.Any("err", err))
 			}
 		}
 	}
