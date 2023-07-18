@@ -89,8 +89,13 @@ func parseFileArgs() (filePaths []string) {
 
 func setupLogger(logLevel *slog.LevelVar) *slog.Logger {
 	logOpts := &tint.Options{
-		Level:      logLevel,
-		TimeFormat: " ",
+		Level: logLevel,
+		ReplaceAttr: func(groups []string, attr slog.Attr) slog.Attr {
+			if attr.Key == slog.TimeKey && len(groups) == 0 {
+				return slog.Attr{}
+			}
+			return attr
+		},
 	}
 	logHandler := tint.NewHandler(os.Stderr, logOpts)
 	logger := slog.New(logHandler)
