@@ -46,7 +46,7 @@ type UISlug struct {
 
 func (r RockonDetails) MarshalJSON() ([]byte, error) {
 	type ro RockonDetails
-	if r.UI != nil && !r.UI.Https && r.UI.Slug == "" {
+	if r.UI != nil && *r.UI == (UISlug{}) {
 		r.UI = nil
 	}
 	return json.Marshal(ro(r))
