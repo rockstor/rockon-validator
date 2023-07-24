@@ -1,4 +1,4 @@
-module github.com/StephenBrown2/rockon-validator
+module github.com/rockstor/rockon-validator
 
 go 1.20
 

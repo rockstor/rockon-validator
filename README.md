@@ -3,7 +3,7 @@
 This is a small script to validate and format RockOn json files. To install, simply run:
 
 ```
-go install github.com/StephenBrown2/rockon-validator@latest
+go install github.com/rockstor/rockon-validator@latest
 # NOTE: Requires go version 1.20 or greater
 ```
 
