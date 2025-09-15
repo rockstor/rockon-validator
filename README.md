@@ -1,13 +1,23 @@
-# rockon-validator
+# Rockon-validator
 
-This is a small script to validate and format RockOn json files. To install, simply run:
+A GO script to validate [Rockstor](https://rockstor.com/)'s [Rock-on](https://github.com/rockstor/rockon-registry) definitions.
+See also: [Rock-ons (Docker Plugins)](https://rockstor.com/docs/interface/overview.html).
 
+## GO download and install
+
+Requires GO version 1.20 or later.
+- [Upstream install instructions](https://go.dev/doc/install)
+
+Alternatively a docker image definition is included.
+See the: [Docker](#docker) subsection below for details.
+
+
+## Script install/run
 ```
 go install github.com/rockstor/rockon-validator@latest
-# NOTE: Requires go version 1.20 or greater
 ```
 
-and then to run, use any of the three options `--check`, `--diff`, or `--write` to validate your file:
+### Run options
 
 ```
 rockon-validator [--check] [--diff] [--write] [--root FILE] [--verbose|--debug] FILE...
@@ -24,15 +34,17 @@ Options:
     --debug        Enable debug logging
 ```
 
-For example, to Check that your file meets the correct format:
+## Example
+
+To Check `rockon.json` meets formating guidelines:
 
 ```
-rockon-validator -c rockon.json
+rockon-validator --check rockon.json
 ```
 
-will exit with `0` (success), or non-zero (`1` in this case) if the file does not meet the correct format.
+Returns `0` (success), or `1` (fail).
 
-Similarly, `-d` will output a diff between the existing and expected format,
+Similarly, `--diff` produces a `diffutils` formated output re: existing and proposed file format:
 
 ```diff
 --- a/files/bitcoind.json
@@ -84,32 +96,34 @@ Similarly, `-d` will output a diff between the existing and expected format,
  }
 ```
 
-and `-w` will re-write the file, assuming it meets the correct syntax, but not the right formatting.
+N.B. `--write` **USE WITH CAUTION** re-writes the file in-place; assuming correct syntax but incorrect formatting.
 
 ## Multiple files
 
 Multiple files (or glob patterns) can be passed to validate several files simultaneously.
 
-## Root.json
+## The root.json index
 
-In addition, the script will check for a `root.json` file in the same directory as the given file (or files)
-and ensure that an entry exists for said file in the `root.json`, and that the name referenced matches, warning
-if they differ. If the `--root` flag is passed with a path to a `root.json` file, that file will be used instead.
-
-No change to the name is made if they are different, but an entry is added if it is missing.
+The script checks for a `root.json` index file and ensures a matching entry exists for the processed definitions.
+A warning will result for differing names, but an entry is added if non is found.
+An alternative target index file can be passed via the `--root` flag.
 
 ## Docker
 
-If you do not have or want go 1.20+ on your machine, you can use the Docker container provided instead.
+This repo contains a docker image using the "FROM golang as builder" directive.
 
-To build, run:
-
-```
-docker build -t validator:latest .
-```
-
-And then to run, mount the directory containing your rockon file(s) to `/files` in the container:
+### Build container
 
 ```
-docker run -v $(pwd):/files validator -w rockon.json
+docker build -t rockon-validator:latest .
+```
+
+### Container use
+
+Volume mount the local rock-on file(s) directory under `/files` within the container.
+In the following example we use the current/working directory,
+and specify a single file to validate. 
+
+```
+docker run -v $(pwd):/files rockon-validator --diff rockon.json
 ```
