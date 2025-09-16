@@ -57,7 +57,7 @@ type Container struct {
 	Image        string                    `json:"image"`                   // docker image. eg: linuxserver/plex
 	Tag          string                    `json:"tag,omitempty"`           // tag of the docker image, if any. latest is used by default.
 	LaunchOrder  UintValue                 `json:"launch_order"`            // typically 1 or above. If there are multiple containers and they must be started in order, specify here.
-	uid          string                    `json:"uid,omitempty"`           // docker level UID:GUID or just UID (or -1 to invoke specific Rockstor logic), under which the container would run
+	Uid          *int32                    `json:"uid,omitempty"`           // invoke docker --user UID, or if -1 then first share owner.
 	Ports        map[string]Port           `json:"ports,omitempty"`         // Map of (container) port numbers to Port objects, mapping the container port to the host
 	Volumes      map[string]Volume         `json:"volumes,omitempty"`       // Map of container mount points to Volume objects, representing Shares to be mounted in the container
 	Opts         []Option                  `json:"opts,omitempty"`          // Array of Option objects that represent container options such as --net=host etc.
