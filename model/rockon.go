@@ -14,7 +14,7 @@ func (r RockOn) ToJSON() (string, error) {
 	var tmp strings.Builder
 	enc := json.NewEncoder(&tmp)
 	enc.SetEscapeHTML(false)
-	enc.SetIndent("", "    ")
+	enc.SetIndent("", "  ")
 
 	err := enc.Encode(r)
 	if err != nil {
