@@ -64,6 +64,10 @@ func parseFlags() {
 func parseFileArgs() (filePaths []string) {
 	for _, f := range flag.Args() {
 		glob, _ := filepath.Glob(f)
+		if glob == nil {
+			logger.Error("No matching files found.")
+			os.Exit(2)
+		}
 		filePaths = append(filePaths, glob...)
 	}
 

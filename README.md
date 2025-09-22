@@ -42,7 +42,7 @@ N.B. uses a `go install` instantiated binary; see [Development](#development) be
 ~/go/bin/rockon-validator --check forgejo-runner.json
 ```
 
-Returns `0` (success), or `1` (fail).
+Returns `0` (success), `1` (fail), and `2` (No matching files found.). 
 
 Similarly, `--diff` produces a `diffutils` formated output re: existing and proposed file format:
 
@@ -110,13 +110,27 @@ An alternative target index file can be passed via the `--root` flag.
 
 ## Development
 
-Details more associated with development. 
+Details more associated with development.
 
 ### GO download and install
 
-Alternative to the `docker run` approach, and required for development purposes.
+Alternatives to the `docker run` approach, and required for development purposes.
 Requires GO version 1.20 or later.
 - [Upstream install instructions](https://go.dev/doc/install)
+
+### Go build
+
+Creates a `rockon-validator` binary directly in/from the source root:
+
+```shell
+go build
+```
+
+Run via:
+
+```shell
+./rockon-validator
+````
 
 ### Script install/run (from repo)
 
