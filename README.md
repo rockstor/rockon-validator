@@ -42,7 +42,11 @@ N.B. uses a `go install` instantiated binary; see [Development](#development) be
 ~/go/bin/rockon-validator --check forgejo-runner.json
 ```
 
-Returns `0` (success), `1` (fail), and `2` (No matching files found.). 
+Returns:
+- `0` success: file is valid; or `--diff` to valid status was achieved.   
+- `1` fail
+- `2` No matching files found.
+- `3` Invalid JSON format: file=./path/not-json.json
 
 Similarly, `--diff` produces a `diffutils` formated output re: existing and proposed file format:
 

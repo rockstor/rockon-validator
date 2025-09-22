@@ -164,6 +164,11 @@ func main() {
 		}
 		dataString := string(data)
 
+		if !json.Valid(data) {
+			logger.Error("Invalid JSON format:", slog.String("file", f))
+			os.Exit(3) // All files should at least parse as JSON.
+		}
+
 		rootFile = rootFlag
 		if rootFlag == "" {
 			rootFile = filepath.Join(filepath.Dir(f), "root.json")
@@ -172,6 +177,7 @@ func main() {
 		json.Unmarshal(rootData, &rootMap)
 		logger.Debug("root.json flags", slog.String("rootFlag", rootFlag), slog.String("rootFile", rootFile))
 
+		// Move to validation against RockOn model.
 		var rockon model.RockOn
 		err = json.Unmarshal(data, &rockon)
 		if err != nil {
@@ -182,10 +188,10 @@ func main() {
 			}
 			if filepath.Ext(f) == ".json" {
 				logger.Error("Unmarshaling json data", slog.String("file", f), slog.Any("err", err))
-				os.Exit(1) // File was named `.json`, but couldn't be marshalled as expected, so we need to exit.
+				os.Exit(1) // File was named `*.json`, but couldn't be marshalled as expected, so we need to exit.
 			}
-			logger.Warn("Non-json file passed as input, skipping", slog.String("file", f))
-			continue // Otherwise, it wasn't a json file, so we shouldn't worry about it.
+			logger.Warn("Non *.json filename passed as input, skipping", slog.String("file", f))
+			continue // File was not named `*.json`, so we shouldn't worry about it.
 		}
 
 		checkRootMap(rootMap, filepath.Base(f), rockon)
