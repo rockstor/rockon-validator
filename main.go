@@ -152,7 +152,6 @@ func main() {
 	logger.Debug("Operation flags", slog.Bool("checkFlag", checkFlag), slog.Bool("diffFlag", diffFlag), slog.Bool("writeFlag", writeFlag))
 	logger.Debug("Verbosity flags", slog.Bool("verboseFlag", verboseFlag), slog.Bool("debugFlag", debugFlag))
 	logger.Debug("root.json flags", slog.String("rootFlag", rootFlag), slog.String("rootFile", rootFile))
-	rootMap := map[string]string{}
 
 	var numDiffFiles int
 	for _, f := range parseFileArgs() {
@@ -165,27 +164,40 @@ func main() {
 		dataString := string(data)
 
 		if !json.Valid(data) {
-			logger.Error("Invalid JSON format:", slog.String("file", f))
+			logger.Error("Invalid JSON format", slog.String("file", f))
 			os.Exit(3) // All files should at least parse as JSON.
 		}
 
 		rootFile = rootFlag
 		if rootFlag == "" {
 			rootFile = filepath.Join(filepath.Dir(f), "root.json")
+			logger.Info("Using same-path index", slog.String("file", rootFile))
+		} else {
+			logger.Info("Using passed index", slog.String("file", rootFile))
 		}
-		rootData, _ := os.ReadFile(rootFile)
-		json.Unmarshal(rootData, &rootMap)
+
+		rootData, err := os.ReadFile(rootFile)
+		if err != nil {
+			logger.Error("Reading index", slog.String("file", rootFile), slog.Any("err", err))
+			os.Exit(4)
+		}
+		if !json.Valid(rootData) {
+			logger.Error("Invalid JSON format in index", slog.String("file", rootFile))
+			os.Exit(5) // All files should at least parse as JSON.
+		}
+
+		rootMap := map[string]string{}
+		err = json.Unmarshal(rootData, &rootMap)
 		logger.Debug("root.json flags", slog.String("rootFlag", rootFlag), slog.String("rootFile", rootFile))
+		if err != nil {
+			logger.Error("Index validation failed for", slog.String("file", rootFile))
+			os.Exit(1)
+		}
 
 		// Move to validation against RockOn model.
 		var rockon model.RockOn
 		err = json.Unmarshal(data, &rockon)
 		if err != nil {
-			err1 := json.Unmarshal(data, &rootMap)
-			if err1 == nil {
-				logger.Warn("Possible root.json, skipping", slog.String("file", f))
-				continue // It may be the root.json, so skip it
-			}
 			if filepath.Ext(f) == ".json" {
 				logger.Error("Unmarshaling json data", slog.String("file", f), slog.Any("err", err))
 				os.Exit(1) // File was named `*.json`, but couldn't be marshalled as expected, so we need to exit.
