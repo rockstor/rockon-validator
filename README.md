@@ -46,7 +46,9 @@ Returns:
 - `0` success: file is valid; or `--diff` to valid status was achieved.   
 - `1` fail
 - `2` No matching files found.
-- `3` Invalid JSON format: file=./path/not-json.json
+- `3` Invalid JSON format file=./path/not-json.json
+- `4` No matching index file: defaults to root.json (same path as tested definition)
+- `5` Invalid JSON format in index file=./path/root.json
 
 Similarly, `--diff` produces a `diffutils` formated output re: existing and proposed file format:
 
