@@ -3,6 +3,31 @@
 A GO script to validate [Rockstor](https://rockstor.com/)'s [Rock-on](https://github.com/rockstor/rockon-registry) definitions.
 See also: [Rock-ons (Docker Plugins)](https://rockstor.com/docs/interface/overview.html).
 
+## Function
+
+Validation is performed via the GO [encoding/json](https://pkg.go.dev/encoding/json) standard library package.
+Initially via the built-in `Valid` function, to establish basic JSON formatting.
+There-after the JSON string is [Unmarshal](https://pkg.go.dev/encoding/json#Unmarshal)'ed as follows:
+- index file: `map[string]string{}` - see main.go.
+- Rock-on definition file: `map[string]RockonDetails` - see model/rockon.go.
+
+Where `RockonDetails` is a GO embedded [struct](https://go.dev/tour/moretypes/2) defining the expected field types.
+If there is a failure to transition the JSON string (file content) to the RockonDetails struct,
+a failed validation (rc=1) error is returned.
+
+### Omitted entries
+
+Many json Rock-on definition elements are optional: e.g. `icon`, `more_info`, `devices` etc.
+Where-as in a GO `struct`, our backing validation, all possible fields are defined.
+To handle this miss-match the [omitempty](https://www.sohamkamani.com/golang/omitempty/) json tag is used.
+This effectively ignores/removes empty, default, or missing json elements during Un/marshalling from/to JSON string format.
+
+For the more advanced `--diff` and `--write` options, this can have surprising consequences.
+I.e. if we want to maintain an explicit `"uid:" 0` element, which would otherwise be removed as a default int32 value,
+we can instead use a pointer to int32, default is undefined: ergo no json element no json marshalling (struct to json).
+Embedded struct pointers, and custom variable types can also approach this same problem re `omitemtpy` compliance.
+All of the above approaches are used within this project.
+
 ## Docker run
 
 Volume mount the definitions directory under `/files` within the container.
@@ -44,7 +69,7 @@ N.B. uses a `go install` instantiated binary; see [Development](#development) be
 
 Returns:
 - `0` success: file is valid; or `--diff` to valid status was achieved.   
-- `1` fail
+- `1` failed validation.
 - `2` No matching files found.
 - `3` Invalid JSON format file=./path/not-json.json
 - `4` No matching index file: defaults to root.json (same path as tested definition)
