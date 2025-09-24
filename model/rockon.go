@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-// A map with a single entry, the Rock-on name. eg: LSIO-Plex
+// RockOn A map with a single entry, the Rock-on name. eg: LSIO-Plex
 type RockOn map[string]RockonDetails
 
 func (r RockOn) ToJSON() (string, error) {
@@ -107,12 +107,15 @@ type Volume struct {
 	MinSize     UintValue `json:"min_size,omitempty"` // suggested minimum size of the Share, in KB
 }
 
-// An options object is a list of exactly two elements.
-//
+// Option An options object is a list of exactly two elements.
 // `--net=host` would be represented as: ["--net", "host"]
 type Option [2]string
 
-// A command arguments object is a list of exactly two elements detailing specific arguments to be passed onto the docker run command. As these arguments will simply be appended to the docker run command, they need to follow the same syntax and order. For instance,
+// CmdArgument A command arguments object is a list of exactly two elements detailing specific arguments.
+// To be passed onto the docker run command.
+// As these arguments will simply be appended to the docker run command,
+// they need to follow the same syntax and order.
+// For instance,
 //
 // `docker run <...> image/name argument1 argument2="text2"` would be represented as:
 //
