@@ -56,7 +56,7 @@ func (r RockonDetails) MarshalJSON() ([]byte, error) {
 type Container struct {
 	Image        string                    `json:"image"`                   // docker image. eg: linuxserver/plex
 	Tag          string                    `json:"tag,omitempty"`           // tag of the docker image, if any. latest is used by default.
-	LaunchOrder  UintValue                 `json:"launch_order"`            // typically 1 or above. If there are multiple containers and they must be started in order, specify here.
+	LaunchOrder  uint8                     `json:"launch_order,omitempty"`  // typically 1 or above. If there are multiple containers and they must be started in order, specify here.
 	Uid          *int32                    `json:"uid,omitempty"`           // invoke docker --user UID, or if -1 then first share owner.
 	Ports        map[string]Port           `json:"ports,omitempty"`         // Map of (container) port numbers to Port objects, mapping the container port to the host
 	Volumes      map[string]Volume         `json:"volumes,omitempty"`       // Map of container mount points to Volume objects, representing Shares to be mounted in the container
@@ -66,32 +66,12 @@ type Container struct {
 	Devices      map[string]Device         `json:"devices,omitempty"`       // Map of device paths to Device objects, to be passed through to the container
 }
 
-// UintValue is a custom type to be able to marshal unsigned integers that may be mistakenly entered as strings.
-type UintValue uint
-
-func (u *UintValue) UnmarshalJSON(data []byte) error {
-	s := string(data)
-	if data[0] == '"' && data[len(data)-1] == '"' {
-		err := json.Unmarshal(data, &s)
-		if err != nil {
-			return err
-		}
-	}
-	n, err := strconv.ParseUint(s, 10, 0)
-	if err != nil {
-		return err
-	}
-
-	*u = UintValue(n)
-	return nil
-}
-
 type Port struct {
-	Description string    `json:"description"`        // A detailed description of this port mapping, why it's for etc..
-	Label       string    `json:"label"`              // A short label for this mapping. eg: Web-UI port
-	HostDefault UintValue `json:"host_default"`       // suggested port number on the host. eg: 8080
-	Protocol    Protocol  `json:"protocol,omitempty"` // tcp or udp, default is to map both tcp and udp simultaneously
-	UI          bool      `json:"ui,omitempty"`       // Is port used for Web UI. Not needed if false
+	Description string   `json:"description"`        // A detailed description of this port mapping, why it's for etc..
+	Label       string   `json:"label"`              // A short label for this mapping. eg: Web-UI port
+	HostDefault uint16   `json:"host_default"`       // suggested port number on the host. eg: 8080
+	Protocol    Protocol `json:"protocol,omitempty"` // tcp or udp, default is to map both tcp and udp simultaneously
+	UI          bool     `json:"ui,omitempty"`       // Is port used for Web UI. Not needed if false
 }
 
 type Protocol string
@@ -102,9 +82,9 @@ const (
 )
 
 type Volume struct {
-	Description string    `json:"description"`        // A detailed description. Eg: This is where all incoming syncthing data will be stored
-	Label       string    `json:"label"`              // A short label. eg: Data Storage
-	MinSize     UintValue `json:"min_size,omitempty"` // suggested minimum size of the Share, in KB
+	Description string `json:"description"`        // A detailed description. Eg: This is where all incoming syncthing data will be stored
+	Label       string `json:"label"`              // A short label. eg: Data Storage
+	MinSize     uint64 `json:"min_size,omitempty"` // suggested minimum size of the Share, in Bytes
 }
 
 // Option An options object is a list of exactly two elements.
@@ -123,10 +103,10 @@ type Option [2]string
 type CmdArgument [2]string
 
 type EnvironmentVar struct {
-	Description string    `json:"description"`       // Detailed description. Eg: Login username for Syncthing UI
-	Label       string    `json:"label"`             // A short label. eg: Web-UI username
-	Index       UintValue `json:"index,omitempty"`   // 1 or above. Order of this environment variable, if relevant
-	Default     StrValue  `json:"default,omitempty"` // Default value for this env var
+	Description string   `json:"description"`       // Detailed description. Eg: Login username for Syncthing UI
+	Label       string   `json:"label"`             // A short label. eg: Web-UI username
+	Index       uint8    `json:"index,omitempty"`   // 1 or above. Order of this environment variable, if relevant
+	Default     StrValue `json:"default,omitempty"` // Default value for this env var
 }
 
 // StrValue is a custom type to be able to marshal strings that may be mistakenly entered as an integer.
@@ -147,9 +127,9 @@ func (s *StrValue) UnmarshalJSON(data []byte) error {
 }
 
 type Device struct {
-	Description string    `json:"description"`     // Detailed description of the device and its intent or specificities. Eg: path to device (/dev/xxx)
-	Label       string    `json:"label"`           // A short label. eg: Hardware encoding device
-	Index       UintValue `json:"index,omitempty"` // 1 or above. Order of this device, if relevant
+	Description string `json:"description"`     // Detailed description of the device and its intent or specificities. Eg: path to device (/dev/xxx)
+	Label       string `json:"label"`           // A short label. eg: Hardware encoding device
+	Index       uint8  `json:"index,omitempty"` // 1 or above. Order of this device, if relevant
 }
 
 type CustomConfig struct {
