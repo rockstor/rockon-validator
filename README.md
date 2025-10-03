@@ -68,12 +68,14 @@ N.B. uses a `go install` instantiated binary; see [Development](#development) be
 ```
 
 Returns:
-- `0` success: file is valid; or `--diff` to valid status was achieved.   
-- `1` failed validation.
+- `0` Success: file is valid; or `--diff` to valid status was achieved.   
+- `1` Failed validation.
 - `2` No matching files found.
-- `3` Invalid JSON format file=./path/not-json.json
-- `4` No matching index file: defaults to root.json (same path as tested definition)
-- `5` Invalid JSON format in index file=./path/root.json
+- `3` Invalid JSON format file=./path/not-json.json.
+- `4` No matching index file: defaults to root.json (same path as tested definition).
+- `5` Invalid JSON format in index file=./path/root.json.
+- `6` Overwrite Rockon file error.
+- `7` Overwire/write index file error.
 
 Similarly, `--diff` produces a `diffutils` formated output re: existing and proposed file format:
 
@@ -146,7 +148,7 @@ Details more associated with development.
 ### GO download and install
 
 Alternatives to the `docker run` approach, and required for development purposes.
-Requires GO version 1.20 or later.
+Requires GO version 1.23 or later.
 - [Upstream install instructions](https://go.dev/doc/install)
 
 ### Go build
