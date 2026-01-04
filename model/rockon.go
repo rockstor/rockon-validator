@@ -58,6 +58,7 @@ type Container struct {
 	Tag          string                    `json:"tag,omitempty"`           // tag of the docker image, if any. latest is used by default.
 	LaunchOrder  uint8                     `json:"launch_order,omitempty"`  // typically 1 or above. If there are multiple containers and they must be started in order, specify here.
 	Uid          *int32                    `json:"uid,omitempty"`           // invoke docker --user UID, or if -1 then first share owner.
+	Gid          *int32                    `json:"gid,omitempty"`           // GID addition to above re --user UID:GID, additionally -2 invokes GID of 'docker'.
 	Ports        map[string]Port           `json:"ports,omitempty"`         // Map of (container) port numbers to Port objects, mapping the container port to the host
 	Volumes      map[string]Volume         `json:"volumes,omitempty"`       // Map of container mount points to Volume objects, representing Shares to be mounted in the container
 	Opts         []Option                  `json:"opts,omitempty"`          // Array of Option objects that represent container options such as --net=host etc.
