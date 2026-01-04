@@ -1,5 +1,6 @@
 rockon-validator: a command-line tool to validate and format rock-on json files, used in the Rockstor Project DIY NAS Appliance.
 Copyright (C) 2023 Stephen Brown II
+Copyright (joint work) 2023-2026 The Rockstor Project <https://rockstor.com>
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
