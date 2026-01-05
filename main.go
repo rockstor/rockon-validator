@@ -10,13 +10,12 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
-
+	// https://pkg.go.dev/golang.org/x/exp/slog@v0.0.0-20251219203646-944ab1f22d93#Logger
 	"golang.org/x/exp/slog" // nee "log/slog"
 
 	"github.com/hexops/gotextdiff"
 	"github.com/hexops/gotextdiff/myers"
 	"github.com/hexops/gotextdiff/span"
-	"github.com/lmittmann/tint"
 
 	"github.com/rockstor/rockon-validator/model"
 )
@@ -74,45 +73,9 @@ func parseFileArgs() (filePaths []string) {
 		}
 		filePaths = append(filePaths, glob...)
 	}
-	// recurse subdirectories
-	//for i, f := range filePaths {
-	//	files, err := os.ReadDir(f)
-	//	if err != nil {
-	//		continue // What we got was not a directory, so we can leave it be
-	//	}
-	//
-	//	entries := []string{}
-	//	for _, e := range files {
-	//		if !e.IsDir() {
-	//			entries = append(entries, filepath.Join(f, e.Name()))
-	//		}
-	//	}
-	//	head := filePaths[:i]
-	//	if i == 0 {
-	//		head = []string{}
-	//	}
-	//	tail := filePaths[i+1:]
-	//	filePaths = append(head, entries...)
-	//	filePaths = append(filePaths, tail...)
-	//}
+
 	logger.Debug("paseFileArgs()", slog.Any("Return", filePaths))
 	return filePaths
-}
-
-func setupLogger(logLevel *slog.LevelVar) *slog.Logger {
-	logOpts := &tint.Options{
-		Level: logLevel,
-		ReplaceAttr: func(groups []string, attr slog.Attr) slog.Attr {
-			if attr.Key == slog.TimeKey && len(groups) == 0 {
-				return slog.Attr{}
-			}
-			return attr
-		},
-	}
-	logHandler := tint.NewHandler(os.Stderr, logOpts)
-	logger = slog.New(logHandler)
-	slog.SetDefault(logger)
-	return logger
 }
 
 func checkRootMap(rootMap map[string]string, filename string, rockon model.RockOn) {
@@ -148,9 +111,11 @@ func checkRootMap(rootMap map[string]string, filename string, rockon model.RockO
 }
 
 func main() {
-	logLevel := &slog.LevelVar{}
+	var logLevel = new(slog.LevelVar)
 	logLevel.Set(slog.LevelWarn)
-	logger = setupLogger(logLevel)
+	logHandler := slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: logLevel})
+	logger = slog.New(logHandler)
+	slog.SetDefault(logger)
 
 	flag.Usage = func() {
 		_, err := fmt.Fprint(os.Stderr, usage)

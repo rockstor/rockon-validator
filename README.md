@@ -80,53 +80,60 @@ Returns:
 Similarly, `--diff` produces a `diffutils` formated output re: existing and proposed file format:
 
 ```diff
---- a/files/bitcoind.json
-+++ b/files/bitcoind.json
-@@ -1,21 +1,25 @@
+./rockon-validator --diff ./temp/OpenSpeedTest.json 
+time=2026-01-05T13:42:05.137Z level=WARN msg="Name mismatch:" index="SpeedTest by OpenSpeedTest" expected="speedtest by openspeedtest" file=OpenSpeedTest.json
+time=2026-01-05T13:42:05.137Z level=WARN msg="(if --write) Removing and adding expected entry."
+--- a/./temp/OpenSpeedTest.json
++++ b/./temp/OpenSpeedTest.json
+@@ -1,25 +1,21 @@
  {
-     "Bitcoin": {
-+        "description": "Bitcoin full node. <p>Based on a custom docker image: <a href='https://hub.docker.com/r/kylemanna/bitcoind' target='_blank'>https://hub.docker.com/r/kylemanna/bitcoind</a>, available for amd64 architecture only.</p>",
-+        "version": "1.1",
-+        "website": "https://bitcoin.org/en/full-node",
-+        "volume_add_support": true,
-         "containers": {
-             "bitcoind": {
-                 "image": "kylemanna/bitcoind",
-                 "launch_order": 1,
-                 "ports": {
--                    "8333": {
--                        "description": "Listening port",
--                        "host_default": 28333,
--                        "label": "Port for incoming connections",
--                        "protocol": "tcp"
--                    },
-                     "8332": {
-                         "description": "JSONRPC port",
--                        "host_default": 28332,
-                         "label": "The JSONRPC server allows to query and control the server remotely",
-+                        "host_default": 28332,
-                         "protocol": "tcp"
-+                    },
-+                    "8333": {
-+                        "description": "Listening port",
-+                        "label": "Port for incoming connections",
-+                        "host_default": 28333,
-+                        "protocol": "tcp"
-                     }
-                 },
-                 "volumes": {
-@@ -26,10 +21,6 @@
-                     }
-                 }
-             }
--        },
--        "description": "Bitcoin full node. <p>Based on a custom docker image: <a href='https://hub.docker.com/r/kylemanna/bitcoind' target='_blank'>https://hub.docker.com/r/kylemanna/bitcoind</a>, available for amd64 architecture only.</p>",
--        "volume_add_support": true,
--        "website": "https://bitcoin.org/en/full-node",
--        "version": "1.1"
+   "SpeedTest by OpenSpeedTest": {
++    "description": "<p>SpeedTest by OpenSpeedTest™ is a free and open-source HTML5 network performance estimation tool. Written in vanilla Javascript it only uses built-in Web APIs like XMLHttpRequest (XHR), HTML, CSS, JS, &amp; SVG. No third-party frameworks or libraries are required.<p>Based on the official docker image: <a href='https://hub.docker.com/r/openspeedtest/latest' target='_blank'> https://hub.docker.com/r/openspeedtest/latest/</a>, available for amd64 and arm64 architecture.</p>",
++    "version": "1.0",
++    "website": "https://openspeedtest.com/",
+     "containers": {
+       "speedtest": {
+         "image": "openspeedtest/latest",
+-               "launch_order": 1,
+-               "ports": {
+-                       "3000": {
+-                               "description": "SpeedTest http WebUI port. Suggested Default: 3000",
+-                               "host_default": 3000,
+-                               "label": "http WebUI port",
+-                               "ui": true
+-                       }
+-               }
++        "launch_order": 1,
++        "ports": {
++          "3000": {
++            "description": "SpeedTest http WebUI port. Suggested Default: 3000",
++            "label": "http WebUI port",
++            "host_default": 3000,
++            "ui": true
++          }
 +        }
-     }
+       }
+-    },
+-    "description": "<p>SpeedTest by OpenSpeedTest™ is a free and open-source HTML5 network performance estimation tool. Written in vanilla Javascript it only uses built-in Web APIs like XMLHttpRequest (XHR), HTML, CSS, JS, &amp; SVG. No third-party frameworks or libraries are required.<p>Based on the official docker image: <a href='https://hub.docker.com/r/openspeedtest/latest' target='_blank'> https://hub.docker.com/r/openspeedtest/latest/</a>, available for amd64 and arm64 architecture.</p>",
+-    "ui": {
+-      "https": false,
+-      "slug": ""
+-    },
+-    "website": "https://openspeedtest.com/",
+-    "version": "1.0"
++    }
+   }
  }
+# the following is abridged:
+--- a/temp/root.json
++++ b/temp/root.json
+@@ -1,89 +1,89 @@
+ {
+...
+-    "SpeedTest by OpenSpeedTest": "OpenSpeedTest.json",
+...
++  "speedtest by openspeedtest": "OpenSpeedTest.json"
+...
 ```
 
 N.B. `--write` **USE WITH CAUTION** re-writes the file in-place; assuming correct syntax but incorrect formatting.
@@ -148,7 +155,7 @@ Details more associated with development.
 ### GO download and install
 
 Alternatives to the `docker run` approach, and required for development purposes.
-Requires GO version 1.23 or later.
+Requires GO version 1.24 or later.
 - [Upstream install instructions](https://go.dev/doc/install)
 
 ### Go build
