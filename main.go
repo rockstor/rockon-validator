@@ -149,6 +149,11 @@ func main() {
 
 	for _, fileName := range parseFileArgs() {
 		logger.Info("Checking", slog.String("file", fileName))
+		// Ignore "LICENSE" and "README.md" filenames to enable rockon-registry ingestion wholesale.
+		if filepath.Base(fileName) == "LICENSE" || filepath.Base(fileName) == "README.md" {
+			logger.Info("Skipping peripheral file", slog.String("file", fileName))
+			continue
+		}
 		fileData, err := os.ReadFile(fileName)
 		if err != nil {
 			logger.Error("Reading file", slog.String("file", fileName), slog.Any("err", err))
@@ -199,7 +204,7 @@ func main() {
 
 		// Skip Rockon validation for index file: validated above.
 		if filepath.Clean(fileName) == filepath.Clean(rootFile) {
-			logger.Warn("Skipped RockOn validation for index", slog.String("file", rootFile))
+			logger.Info("Skipping RockOn validation for index", slog.String("file", rootFile))
 			continue
 		}
 
